@@ -46,3 +46,9 @@ class FoodEndpointsTest(TestCase):
         response = self.client.get(f"/api/v1/foods/{food_id}").json()
         self.assertEqual(response["name"], food1.name)
         self.assertEqual(response["calories"], food1.calories)
+
+    def test_food_creation_endpoint(self):
+        parameters = { "food": { "name": "Pork Kebabs", "calories": 888 } }
+        response = self.client.post("/api/v1/foods/", parameters, format="json")
+        self.assertEqual(response["name"], parameters["food"]["name"])
+        self.assertEqual(response["calories"], parameters["food"]["calories"])
