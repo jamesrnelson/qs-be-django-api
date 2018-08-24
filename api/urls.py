@@ -1,11 +1,10 @@
-from django.conf.urls import url, include
+from django.urls import path
 from rest_framework.urlpatterns import format_suffix_patterns
-from .views import CreateView
-from .views import DetailsView
+from .views import FoodViews
 
 urlpatterns = {
-    url(r'^', CreateView.as_view(), name="create"),
-    url(r'^(?P<pk>[0-9]+)/$', DetailsView.as_view(), name="details"),
+    path('foods/', FoodViews.as_view({'get': 'list'})),
+    path('foods/<food_id>', FoodViews.as_view({'get': 'find'})),
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)
