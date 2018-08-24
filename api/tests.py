@@ -36,12 +36,13 @@ class FoodEndpointsTest(TestCase):
 
     def test_one_food_endpoint_status(self):
         food1 = Food.objects.create(name="Steak", calories=800)
-
-        response = self.client.get("/api/v1/foods/4")
+        food_id = str(food1.id)
+        response = self.client.get(f"/api/v1/foods/{food_id}")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_one_food_endpoint_json(self):
-        food1 = Food.objects.create(name="Steak", calories=800)
-        response = self.client.get("/api/v1/foods/4").json()
+        food1 = Food.objects.create(name="Chicken Burrito", calories=1000)
+        food_id = str(food1.id)
+        response = self.client.get(f"/api/v1/foods/{food_id}").json()
         self.assertEqual(response["name"], food1.name)
         self.assertEqual(response["calories"], food1.calories)
