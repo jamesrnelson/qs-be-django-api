@@ -1,1 +1,1 @@
-web: python manage.py runserver
+web: gunicorn qs_be_django_api.wsgi --log-file--
