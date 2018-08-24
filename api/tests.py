@@ -1,71 +1,48 @@
 from django.test import TestCase
-from .models import Food
-from rest_framework.test import APIClient
+from api.models import Food
+import json
 from rest_framework import status
-from django.urls import reverse
+from rest_framework.test import APIClient
 
-# Create your tests here.
-class ModelTestCase(TestCase):
-    """This class defines the test suite for the foods model."""
 
-    def setUp(self):
-        """Define the test client and other test variables."""
-        self.food_name = "Steak with Chimichurri Sauce"
-        self.food = Food(name=self.food_name)
+class FoodModelTest(TestCase):
+    def test_food_saves_to_db(self):
+        Food.objects.create(name="hot dog", calories=650)
+        weenie = Food.objects.get(name="hot dog")
+        count = Food.objects.count()
+        self.assertEqual(weenie.name, "hot dog")
+        self.assertEqual(weenie.calories, 650)
+        self.assertEqual(count, 1)
 
-    def test_model_can_create_foods(self):
-        """Test the bucketlist model can create a food."""
-        old_count = Food.objects.count()
-        self.food.save()
-        new_count = Food.objects.count()
-        self.assertNotEqual(old_count, new_count)
+class FoodEndpointsTest(TestCase):
+    def setup(self):
+        self.client = APIClient()
 
-class ViewTestCase(TestCase):
-    """Test suite for the api views."""
-
-    def setUp(self):
-        """
-        Define the test client and other test variables."""
-        self.cient = APIClient()
-        self.food_data = {'name': 'Shakshuka'}
-        self.response = self.client.post(
-            reverse('create'),
-            self.food_data,
-            format="json"
-        )
-
-    def test_api_can_create_a_bucketlist(self):
-        """Test the api has bucket creation capability."""
-        self.assertEqual(self.response.status_code, status.HTTP_201_CREATED)
-
-    def test_api_can_get_a_food(self):
-        """Test the api can get a given food."""
-        food = Food.objects.get()
-        response = self.client.get(
-            reverse('details',
-            kwargs={'pk': food.id}), format="json"
-        )
-
+    def test_get_all_foods_endpoint_status(self):
+        response = self.client.get("/api/v1/foods/")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertContains(response, food)
 
-    def test_api_can_update_food(self):
-        """Test the api can update a given food."""
-        change_food = {'name': 'Something new'}
-        res = self.client.put(
-            reverse('details', kwargs={'pk': food.id}),
-            change_food, format='json'
-        )
+    def test_all_foods_endpoint_json(self):
+        food1 = Food.objects.create(name="Banana", calories=150)
+        food2 = Food.objects.create(name="Yogurt", calories=550)
+        food3 = Food.objects.create(name="Apple", calories=220)
 
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        response = self.client.get("/api/v1/foods/").json()
+        self.assertEqual(len(response), 3)
+        self.assertEqual(response[0]["name"], food1.name)
+        self.assertEqual(response[0]["calories"], food1.calories)
+        self.assertEqual(response[1]["name"], food2.name)
+        self.assertEqual(response[1]["calories"], food2.calories)
 
-    def test_api_can_delete_food(self):
-        """Test the api can delete a food."""
-        food = Food.objects.get()
-        response = self.client.delete(
-            reverse('details', kwargs={'pk': food.id}),
-            format='json',
-            follow=True
-        )
+    def test_one_food_endpoint_status(self):
+        food1 = Food.objects.create(name="Steak", calories=800)
+        food_id = str(food1.id)
+        response = self.client.get(f"/api/v1/foods/{food_id}")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-        self.assertEquals(response.status_code, status.HTTP_204_NO_CONTENT)
+    def test_one_food_endpoint_json(self):
+        food1 = Food.objects.create(name="Chicken Burrito", calories=1000)
+        food_id = str(food1.id)
+        response = self.client.get(f"/api/v1/foods/{food_id}").json()
+        self.assertEqual(response["name"], food1.name)
+        self.assertEqual(response["calories"], food1.calories)
