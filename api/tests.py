@@ -1,8 +1,8 @@
+import json
+from rest_framework.test import APIClient
+from rest_framework import status
 from django.test import TestCase
 from api.models import Food
-import json
-from rest_framework import status
-from rest_framework.test import APIClient
 
 
 class FoodModelTest(TestCase):
@@ -48,7 +48,8 @@ class FoodEndpointsTest(TestCase):
         self.assertEqual(response["calories"], food1.calories)
 
     def test_food_creation_endpoint(self):
-        parameters = { "food": { "name": "Pork Kebabs", "calories": 888 } }
-        response = self.client.post("/api/v1/foods/", parameters, format="json")
-        self.assertEqual(response["name"], parameters["food"]["name"])
-        self.assertEqual(response["calories"], parameters["food"]["calories"])
+        response = self.client.post('/api/v1/foods/', json.dumps({'food': {'name': 'Pork Kebabs', 'calories': 800}}), content_type='application/json')
+        food_response = response.json()
+
+        self.assertEqual(food_response["name"], "Pork Kebabs")
+        self.assertEqual(food_response["calories"], 800)

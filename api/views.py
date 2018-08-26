@@ -1,6 +1,8 @@
 from django.shortcuts import render
-from .serializers import FoodSerializer
-from .models import Food
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse, JsonResponse
+from api.models import Food
+from api.serializers import FoodSerializer
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -16,7 +18,13 @@ class FoodViews(viewsets.ViewSet):
 
     def find(self, request, food_id):
         """This method defines the find behavior of the foods api."""
-        
+
         queryset = Food.objects.get(pk=food_id)
         serializer = FoodSerializer(queryset)
+        return Response(serializer.data)
+
+    def create(self, request):
+        food_attrs = request.data['food']
+        food = Food.objects.create(name=food_attrs['name'], calories=food_attrs['calories'])
+        serializer = FoodSerializer(food)
         return Response(serializer.data)
