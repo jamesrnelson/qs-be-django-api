@@ -53,3 +53,12 @@ class FoodEndpointsTest(TestCase):
 
         self.assertEqual(food_response["name"], "Pork Kebabs")
         self.assertEqual(food_response["calories"], 800)
+
+    def test_food_error_handling(self):
+        response = self.client.post(
+            '/api/v1/foods/',
+            json.dumps({'food': {'calories': 800}}),
+            content_type='application/json'
+        )
+        food_response = response.json()
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
