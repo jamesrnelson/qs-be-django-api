@@ -21,9 +21,7 @@ class MealModelTest(TestCase):
         food1 = Food.objects.create(name='Huevos Rancheros', calories=555)
         food2 = Food.objects.create(name='Bacon', calories=777)
         food3 = Food.objects.create(name='Smoked Salmon Scramble', calories=600)
-        meal1.foods.add(food1)
-        meal1.foods.add(food2)
-        meal1.foods.add(food3)
+        meal1.foods.add(food1, food2, food3)
 
         meal_count = Meal.objects.count()
         foods_count = meal1.foods.count()
@@ -141,3 +139,21 @@ class MealEndpointsTest(TestCase):
         self.assertEqual(meals_response[1]['name'], meal2.name)
         self.assertEqual(len(meals_response[1]['foods']), 2)
         self.assertEqual(meals_response[1]['foods'][1]['name'], food2.name)
+
+    def test_find_one_meal(self):
+        meal1 = Meal.objects.create(name='Brunch')
+        meal2 = Meal.objects.create(name='Lunch')
+        food1 = Food.objects.create(name='Huevos Rancheros', calories=555)
+        food2 = Food.objects.create(name='Bacon', calories=777)
+        food3 = Food.objects.create(name='Smoked Salmon Scramble', calories=600)
+        meal1.foods.add(food1, food2, food3)
+        meal2.foods.add(food1, food2)
+
+        meal_id = str(meal1.id)
+        response = self.client.get(f'/api/v1/meals/{meal_id}/foods')
+        meal_response = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(meal_response['name'], meal1.name)
+        self.assertEqual(len(meal_response['foods']), 3)
+        self.assertEqual(meal_response['foods'][2]['name'], food3.name)
