@@ -57,7 +57,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ORIGIN_WHITELIST = (
-    'https://polar-journey-23475.herokuapp.com/api/v1/foods',
+    'https://polar-journey-23475.herokuapp.com',
     'localhost:8000',
     'localhost:8080',
     '127.0.0.1:8000',
