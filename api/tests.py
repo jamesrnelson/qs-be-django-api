@@ -119,4 +119,25 @@ class MealEndpointsTest(TestCase):
     def test_get_all_meals_endpoint_status(self):
         response = self.client.get('/api/v1/meals/')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-    
+
+    def test_get_all_meals_endpoint_json(self):
+        meal1 = Meal.objects.create(name='Brunch')
+        meal2 = Meal.objects.create(name='Lunch')
+        food1 = Food.objects.create(name='Huevos Rancheros', calories=555)
+        food2 = Food.objects.create(name='Bacon', calories=777)
+        food3 = Food.objects.create(name='Smoked Salmon Scramble', calories=600)
+        meal1.foods.add(food1, food2, food3)
+        meal2.foods.add(food1, food2)
+
+
+        response = self.client.get('/api/v1/meals/')
+        meals_response = response.json()
+
+        self.assertEqual(len(meals_response), 2)
+        self.assertEqual(meals_response[0]['name'], meal1.name)
+        self.assertEqual(len(meals_response[0]['foods']), 3)
+        self.assertEqual(meals_response[0]['foods'][0]['name'], 'Huevos Rancheros')
+
+        self.assertEqual(meals_response[1]['name'], meal2.name)
+        self.assertEqual(len(meals_response[1]['foods']), 2)
+        self.assertEqual(meals_response[1]['foods'][1]['name'], food2.name)
