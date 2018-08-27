@@ -85,3 +85,9 @@ class FoodEndpointsTest(TestCase):
             content_type='application/json'
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_food_deletion_endpoint(self):
+        food1 = Food.objects.create(name='Beef Stroganoff', calories=999)
+        food_id = str(food1.id)
+        response = self.client.delete(f'/api/v1/foods/{food_id}')
+        assert response.status_code == 204
