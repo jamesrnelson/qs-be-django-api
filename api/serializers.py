@@ -7,7 +7,7 @@ class FoodSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'calories')
 
 class MealSerializer(serializers.ModelSerializer):
-    foods = serializers.StringRelatedField(many=True)
+    foods = FoodSerializer(read_only=True, many=True)
 
     class Meta:
         model = Meal

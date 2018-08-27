@@ -49,5 +49,5 @@ class FoodViews(viewsets.ViewSet):
 class MealViews(viewsets.ViewSet):
     def list(self, request):
         meals = Meal.objects.all()
-        serializer = MealSerializer(many=True)
+        serializer = MealSerializer(meals, many=True)
         return Response(serializer.data)
