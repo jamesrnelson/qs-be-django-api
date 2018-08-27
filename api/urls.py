@@ -7,7 +7,10 @@ urlpatterns = {
         'get': 'list',
         'post': 'create',
     })),
-    path('foods/<food_id>', FoodViews.as_view({'get': 'find'})),
+    path('foods/<food_id>', FoodViews.as_view({
+        'get': 'find',
+        'put': 'update',
+    })),
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)
