@@ -30,9 +30,12 @@ class FoodViews(viewsets.ViewSet):
 
     def update(self, request, food_id):
         params = request.data['food']
-        food = Food.objects.get(pk=food_id)
-        food.name = params['name']
-        food.calories = params['calories']
-        food.save()
-        serializer = FoodSerializer(food)
-        return Response(serializer.data)
+        if 'name' in params.keys() and 'calories' in params.keys():
+            food = Food.objects.get(pk=food_id)
+            food.name = params['name']
+            food.calories = params['calories']
+            food.save()
+            serializer = FoodSerializer(food)
+            return Response(serializer.data)
+        else:
+            return HttpResponse(status=400)
