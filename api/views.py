@@ -2,8 +2,8 @@ from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, JsonResponse
 from django.core.exceptions import ObjectDoesNotExist
-from api.models import Food
-from api.serializers import FoodSerializer
+from api.models import Food, Meal
+from api.serializers import FoodSerializer, MealSerializer
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
@@ -45,3 +45,9 @@ class FoodViews(viewsets.ViewSet):
         food = get_object_or_404(Food, pk=food_id)
         food.delete()
         return HttpResponse(status=204)
+
+class MealViews(viewsets.ViewSet):
+    def list(self, request):
+        meals = Meal.objects.all()
+        serializer = MealSerializer(many=True)
+        return Response(serializer.data)
