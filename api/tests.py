@@ -66,12 +66,12 @@ class FoodEndpointsTest(TestCase):
         food1 = Food.objects.create(name='Chicken Kiev', calories=555)
         food_id = str(food1.id)
         response = self.client.put(
-            f'/api/v1/foods/{food_id}/',
+            f'/api/v1/foods/{food_id}',
             json.dumps({'food': {'name': 'Beef Wellington', 'calories': 777}}),
             content_type='application/json'
         )
         food_response = response.json()
 
-        self.assertEqual(food_response['id'], food_id)
+        self.assertEqual(food_response['id'], food1.id)
         self.assertEqual(food_response['name'], 'Beef Wellington')
         self.assertEqual(food_response['calories'], 777)

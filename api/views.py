@@ -11,16 +11,13 @@ import json
 # Create your views here.
 class FoodViews(viewsets.ViewSet):
     def list(self, request):
-        """This method defines the list behavior of the foods api."""
-        queryset = Food.objects.all()
-        serializer = FoodSerializer(queryset, many=True)
+        foods = Food.objects.all()
+        serializer = FoodSerializer(foods, many=True)
         return Response(serializer.data)
 
     def find(self, request, food_id):
-        """This method defines the find behavior of the foods api."""
-
-        queryset = Food.objects.get(pk=food_id)
-        serializer = FoodSerializer(queryset)
+        food = Food.objects.get(pk=food_id)
+        serializer = FoodSerializer(food)
         return Response(serializer.data)
 
     def create(self, request):
@@ -31,3 +28,12 @@ class FoodViews(viewsets.ViewSet):
             return Response(serializer.data)
         else:
             return HttpResponse(status=404)
+
+    def update(self, request, food_id):
+        params = request.data['food']
+        food = Food.objects.get(pk=food_id)
+        food.name = params['name']
+        food.calories = params['calories']
+        food.save()
+        serializer = FoodSerializer(food)
+        return Response(serializer.data)
