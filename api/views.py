@@ -24,7 +24,10 @@ class FoodViews(viewsets.ViewSet):
         return Response(serializer.data)
 
     def create(self, request):
-        food_attrs = request.data['food']
-        food = Food.objects.create(name=food_attrs['name'], calories=food_attrs['calories'])
-        serializer = FoodSerializer(food)
-        return Response(serializer.data)
+        params = request.data['food']
+        if 'name' in params.keys() and 'calories' in params.keys():
+            food = Food.objects.create(name=params['name'], calories=params['calories'])
+            serializer = FoodSerializer(food)
+            return Response(serializer.data)
+        else:
+            return HttpResponse(status=404)

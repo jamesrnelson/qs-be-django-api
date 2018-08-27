@@ -60,5 +60,4 @@ class FoodEndpointsTest(TestCase):
             json.dumps({'food': {'calories': 800}}),
             content_type='application/json'
         )
-        food_response = response.json()
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
