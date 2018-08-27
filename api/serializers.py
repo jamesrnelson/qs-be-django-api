@@ -1,11 +1,14 @@
 from rest_framework import serializers
-from .models import Food
+from .models import Food, Meal
 
 class FoodSerializer(serializers.ModelSerializer):
-    """Serializer to map the Model instance into JSON format."""
+    class Meta:
+        model = Food
+        fields = ('id', 'name', 'calories')
+
+class MealSerializer(serializers.ModelSerializer):
+    foods = FoodSerializer(read_only=True, many=True)
 
     class Meta:
-        """Meta class to map serializer's fields with the model fields."""
-        model = Food
-        fields = ('id', 'name', 'calories', 'date_created', 'date_modified')
-        read_only_fields = ('date_created', 'date_modified')
+        model = Meal
+        fields = ('id', 'name', 'foods')

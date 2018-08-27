@@ -2,7 +2,7 @@ import json
 from rest_framework.test import APIClient
 from rest_framework import status
 from django.test import TestCase
-from api.models import Food
+from api.models import Food, Meal
 
 
 class FoodModelTest(TestCase):
@@ -13,6 +13,23 @@ class FoodModelTest(TestCase):
         self.assertEqual(food1.name, 'hot dog')
         self.assertEqual(food1.calories, 650)
         self.assertEqual(count, 1)
+
+class MealModelTest(TestCase):
+    def test_meal_saves_to_db(self):
+        Meal.objects.create(name='Breakfast')
+        meal1 = Meal.objects.get(name='Breakfast')
+        food1 = Food.objects.create(name='Huevos Rancheros', calories=555)
+        food2 = Food.objects.create(name='Bacon', calories=777)
+        food3 = Food.objects.create(name='Smoked Salmon Scramble', calories=600)
+        meal1.foods.add(food1)
+        meal1.foods.add(food2)
+        meal1.foods.add(food3)
+
+        meal_count = Meal.objects.count()
+        foods_count = meal1.foods.count()
+        self.assertEqual(meal1.name, 'Breakfast')
+        self.assertEqual(meal_count, 1)
+        self.assertEqual(foods_count, 3)
 
 class FoodEndpointsTest(TestCase):
     def setup(self):
@@ -94,3 +111,33 @@ class FoodEndpointsTest(TestCase):
 
         response2 = self.client.get(f'/api/v1/foods/{food_id}')
         self.assertEqual(response2.status_code, status.HTTP_404_NOT_FOUND)
+
+class MealEndpointsTest(TestCase):
+    def setup(self):
+        self.client = APIClient()
+
+    def test_get_all_meals_endpoint_status(self):
+        response = self.client.get('/api/v1/meals/')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_all_meals_endpoint_json(self):
+        meal1 = Meal.objects.create(name='Brunch')
+        meal2 = Meal.objects.create(name='Lunch')
+        food1 = Food.objects.create(name='Huevos Rancheros', calories=555)
+        food2 = Food.objects.create(name='Bacon', calories=777)
+        food3 = Food.objects.create(name='Smoked Salmon Scramble', calories=600)
+        meal1.foods.add(food1, food2, food3)
+        meal2.foods.add(food1, food2)
+
+
+        response = self.client.get('/api/v1/meals/')
+        meals_response = response.json()
+
+        self.assertEqual(len(meals_response), 2)
+        self.assertEqual(meals_response[0]['name'], meal1.name)
+        self.assertEqual(len(meals_response[0]['foods']), 3)
+        self.assertEqual(meals_response[0]['foods'][0]['name'], 'Huevos Rancheros')
+
+        self.assertEqual(meals_response[1]['name'], meal2.name)
+        self.assertEqual(len(meals_response[1]['foods']), 2)
+        self.assertEqual(meals_response[1]['foods'][1]['name'], food2.name)
