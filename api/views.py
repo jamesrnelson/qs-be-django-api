@@ -32,7 +32,7 @@ class FoodViews(viewsets.ViewSet):
     def update(self, request, food_id):
         params = request.data['food']
         if 'name' in params.keys() and 'calories' in params.keys():
-            food = Food.objects.get(pk=food_id)
+            food = get_object_or_404(Food, pk=food_id)
             food.name = params['name']
             food.calories = params['calories']
             food.save()
