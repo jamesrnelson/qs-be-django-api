@@ -56,13 +56,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-CORS_ORIGIN_WHITELIST = (
-    'https://polar-journey-23475.herokuapp.com',
-    'localhost:8000',
-    'localhost:8080',
-    '127.0.0.1:8000',
-    '127.0.0.1:8080',
-)
+CORS_ORIGIN_ALLOW_ALL = True
 
 CORS_ALLOW_METHODS = (
     'DELETE',
@@ -72,8 +66,6 @@ CORS_ALLOW_METHODS = (
     'POST',
     'PUT',
 )
-
-CORS_ALLOW_HEADERS = default_headers
 
 ROOT_URLCONF = 'qs_be_django_api.urls'
 
