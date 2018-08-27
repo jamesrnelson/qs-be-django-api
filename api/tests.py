@@ -75,3 +75,13 @@ class FoodEndpointsTest(TestCase):
         self.assertEqual(food_response['id'], food1.id)
         self.assertEqual(food_response['name'], 'Beef Wellington')
         self.assertEqual(food_response['calories'], 777)
+
+    def test_food_editing_error_handling(self):
+        food1 = Food.objects.create(name='Pasta Naples', calories=555)
+        food_id = str(food1.id)
+        response = self.client.put(
+            f'/api/v1/foods/{food_id}',
+            json.dumps({'food': {'name': 'Meatballs Stockholm'}}),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
