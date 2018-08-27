@@ -51,3 +51,8 @@ class MealViews(viewsets.ViewSet):
         meals = Meal.objects.all()
         serializer = MealSerializer(meals, many=True)
         return Response(serializer.data)
+
+    def find(self, request, meal_id):
+        meal = get_object_or_404(Meal, pk=meal_id)
+        serializer = MealSerializer(meal)
+        return Response(serializer.data)

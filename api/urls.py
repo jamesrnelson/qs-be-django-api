@@ -14,7 +14,10 @@ urlpatterns = {
     })),
     path('meals/', MealViews.as_view({
         'get': 'list',
-    }))
+    })),
+    path('meals/<meal_id>/foods', MealViews.as_view({
+        'get': 'find',
+    })),
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)
