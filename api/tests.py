@@ -91,3 +91,6 @@ class FoodEndpointsTest(TestCase):
         food_id = str(food1.id)
         response = self.client.delete(f'/api/v1/foods/{food_id}')
         assert response.status_code == 204
+
+        response2 = self.client.get(f'/api/v1/foods/{food_id}')
+        self.assertEqual(response2.status_code, status.HTTP_404_NOT_FOUND)
