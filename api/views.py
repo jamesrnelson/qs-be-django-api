@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, JsonResponse
+from django.core.exceptions import ObjectDoesNotExist
 from api.models import Food
 from api.serializers import FoodSerializer
 from rest_framework import status
@@ -15,7 +16,7 @@ class FoodViews(viewsets.ViewSet):
         return Response(serializer.data)
 
     def find(self, request, food_id):
-        food = Food.objects.get(pk=food_id)
+        food = get_object_or_404(Food, pk=food_id)
         serializer = FoodSerializer(food)
         return Response(serializer.data)
 
@@ -39,3 +40,8 @@ class FoodViews(viewsets.ViewSet):
             return Response(serializer.data)
         else:
             return HttpResponse(status=400)
+
+    def destroy(self, request, food_id):
+        food = get_object_or_404(Food, pk=food_id)
+        food.delete()
+        return HttpResponse(status=204)

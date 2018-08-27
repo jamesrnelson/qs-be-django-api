@@ -10,6 +10,7 @@ urlpatterns = {
     path('foods/<food_id>', FoodViews.as_view({
         'get': 'find',
         'put': 'update',
+        'delete': 'destroy',
     })),
 }
 
