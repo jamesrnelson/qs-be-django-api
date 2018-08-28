@@ -157,3 +157,15 @@ class MealEndpointsTest(TestCase):
         self.assertEqual(meal_response['name'], meal1.name)
         self.assertEqual(len(meal_response['foods']), 3)
         self.assertEqual(meal_response['foods'][2]['name'], food3.name)
+
+    def test_find_one_meal_error_handling(self):
+        meal1 = Meal.objects.create(name='Brunch')
+        meal2 = Meal.objects.create(name='Lunch')
+        food1 = Food.objects.create(name='Huevos Rancheros', calories=555)
+        food2 = Food.objects.create(name='Bacon', calories=777)
+        food3 = Food.objects.create(name='Smoked Salmon Scramble', calories=600)
+        meal1.foods.add(food1, food2, food3)
+        meal2.foods.add(food1, food2)
+
+        response = self.client.get(f'/api/v1/meals/1000000/foods')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
