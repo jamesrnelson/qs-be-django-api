@@ -195,3 +195,20 @@ class MealEndpointsTest(TestCase):
         food_id = str(food1.id)
         response = self.client.post(f'/api/v1/meals/1000000/foods/{food_id}')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_deleting_food_from_meal(self):
+        meal1 = Meal.objects.create(name='Snack')
+        food1 = Food.objects.create(name='Gum', calories=50)
+        meal1.foods.add(food1)
+
+        food_id = str(food1.id)
+        meal_id = str(meal1.id)
+
+        response = self.client.delete(f'/api/v1/meals/{meal_id}/foods/{food_id}')
+        meal_food_response = response.json()
+        message = {"message": "Successfully removed Gum from Snack"}
+        self.assertEqual(meal_food_response, message)
+
+        response2 = self.client.get(f'/api/v1/meals/{meal_id}/foods')
+        new_meal_food_response = response2.json()
+        self.assertEqual(len(new_meal_food_response['foods']), 0)

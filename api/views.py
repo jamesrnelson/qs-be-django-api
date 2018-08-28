@@ -65,3 +65,13 @@ class MealViews(viewsets.ViewSet):
         meal.foods.add(food)
         message = {"message": f"Successfully added {food_name} to {meal_name}"}
         return HttpResponse(json.dumps(message), content_type='application/json', status=201)
+
+    def destroy_meal_food(self, request, meal_id, id):
+        meal = get_object_or_404(Meal, pk=meal_id)
+        food = get_object_or_404(Food, pk=id)
+        meal_food = meal.foods.get(pk=id)
+        meal_food.delete()
+        meal_name = str(meal.name)
+        food_name = str(food.name)
+        message = {"message": f"Successfully removed {food_name} from {meal_name}"}
+        return HttpResponse(json.dumps(message), content_type='application/json')
