@@ -20,6 +20,7 @@ urlpatterns = {
     })),
     path('meals/<meal_id>/foods/<id>', MealViews.as_view({
         'post': 'add_food',
+        'delete': 'destroy_meal_food',
     }))
 }
 
