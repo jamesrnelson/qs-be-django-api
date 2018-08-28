@@ -212,3 +212,15 @@ class MealEndpointsTest(TestCase):
         response2 = self.client.get(f'/api/v1/meals/{meal_id}/foods')
         new_meal_food_response = response2.json()
         self.assertEqual(len(new_meal_food_response['foods']), 0)
+
+    def test_deleting_to_meal_food_errors_with_nonexistent_food(self):
+        meal1 = Meal.objects.create(name='Brunch')
+        meal_id = str(meal1.id)
+        response = self.client.delete(f'/api/v1/meals/{meal_id}/foods/1000000')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_deleting_to_meal_food_errors_with_nonexistent_meal(self):
+        food1 = Food.objects.create(name='Huevos Rancheros', calories=555)
+        food_id = str(food1.id)
+        response = self.client.delete(f'/api/v1/meals/1000000/foods/{food_id}')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
