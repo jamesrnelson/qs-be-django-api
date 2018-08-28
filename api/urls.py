@@ -18,6 +18,9 @@ urlpatterns = {
     path('meals/<meal_id>/foods', MealViews.as_view({
         'get': 'find',
     })),
+    path('meals/<meal_id>/foods/<id>', MealViews.as_view({
+        'post': 'add_food',
+    }))
 }
 
 urlpatterns = format_suffix_patterns(urlpatterns)
