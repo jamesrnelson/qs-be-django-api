@@ -169,3 +169,17 @@ class MealEndpointsTest(TestCase):
 
         response = self.client.get(f'/api/v1/meals/1000000/foods')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_food_can_be_added_to_meal(self):
+        meal1 = Meal.objects.create(name='Brunch')
+        food1 = Food.objects.create(name='Huevos Rancheros', calories=555)
+
+        food_id = str(food1.id)
+        meal_id = str(meal1.id)
+
+        response = self.client.post(f'/api/v1/meals/{meal_id}/foods/{food_id}')
+        meal_food_response = response.json()
+        message = {"message": "Successfully added Huevos Rancheros to Brunch"}
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(meal_food_response, message)
