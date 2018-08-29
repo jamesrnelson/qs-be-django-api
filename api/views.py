@@ -43,7 +43,6 @@ class FoodViews(viewsets.ViewSet):
 
     def destroy(self, request, food_id):
         food = get_object_or_404(Food, pk=food_id)
-        import pdb; pdb.set_trace()
         if len(food.meals.all()) > 0:
             return HttpResponse(status=304)
         else:
@@ -67,6 +66,7 @@ class MealViews(viewsets.ViewSet):
         meal_name = str(meal.name)
         food_name = str(food.name)
         meal.foods.add(food)
+        food.meals.add(meal)
         message = {"message": f"Successfully added {food_name} to {meal_name}"}
         return HttpResponse(json.dumps(message), content_type='application/json', status=201)
 
@@ -74,6 +74,7 @@ class MealViews(viewsets.ViewSet):
         meal = get_object_or_404(Meal, pk=meal_id)
         food = get_object_or_404(Food, pk=id)
         meal.foods.remove(food)
+        food.meals.remove(meal)
         meal_name = str(meal.name)
         food_name = str(food.name)
         message = {"message": f"Successfully removed {food_name} from {meal_name}"}
