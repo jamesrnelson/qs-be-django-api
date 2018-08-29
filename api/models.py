@@ -5,7 +5,8 @@ class Food(models.Model):
     calories = models.IntegerField()
     date_created = models.DateTimeField(auto_now_add=True)
     date_modified = models.DateTimeField(auto_now=True)
+    meals = models.ManyToManyField('Meal')
 
 class Meal(models.Model):
     name = models.CharField(max_length=255, blank=False, unique=True)
-    foods = models.ManyToManyField(Food)
+    foods = models.ManyToManyField('Food')

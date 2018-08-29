@@ -43,8 +43,11 @@ class FoodViews(viewsets.ViewSet):
 
     def destroy(self, request, food_id):
         food = get_object_or_404(Food, pk=food_id)
-        food.delete()
-        return HttpResponse(status=204)
+        if len(food.meals.all()) > 0:
+            return HttpResponse(status=304)
+        else:
+            food.delete()
+            return HttpResponse(status=204)
 
 class MealViews(viewsets.ViewSet):
     def list(self, request):
@@ -63,14 +66,15 @@ class MealViews(viewsets.ViewSet):
         meal_name = str(meal.name)
         food_name = str(food.name)
         meal.foods.add(food)
+        food.meals.add(meal)
         message = {"message": f"Successfully added {food_name} to {meal_name}"}
         return HttpResponse(json.dumps(message), content_type='application/json', status=201)
 
     def destroy_meal_food(self, request, meal_id, id):
         meal = get_object_or_404(Meal, pk=meal_id)
         food = get_object_or_404(Food, pk=id)
-        meal_food = meal.foods.get(pk=id)
-        meal_food.delete()
+        meal.foods.remove(food)
+        food.meals.remove(meal)
         meal_name = str(meal.name)
         food_name = str(food.name)
         message = {"message": f"Successfully removed {food_name} from {meal_name}"}
