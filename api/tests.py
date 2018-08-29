@@ -229,7 +229,8 @@ class MealEndpointsTest(TestCase):
         meal1 = Meal.objects.create(name='Dimsum')
         food1 = Food.objects.create(name='Peking Duck', calories=1234)
         meal1.foods.add(food1)
+        food1.meals.add(meal1)
         food_id = str(food1.id)
 
         response = self.client.delete(f'/api/v1/foods/{food_id}')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(response.status_code, status.HTTP_304_NOT_MODIFIED)
