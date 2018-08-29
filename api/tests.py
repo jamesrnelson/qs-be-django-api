@@ -16,8 +16,8 @@ class FoodModelTest(TestCase):
 
 class MealModelTest(TestCase):
     def test_meal_saves_to_db(self):
-        Meal.objects.create(name='Breakfast')
-        meal1 = Meal.objects.get(name='Breakfast')
+        Meal.objects.create(name='Brekkie')
+        meal1 = Meal.objects.get(name='Brekkie')
         food1 = Food.objects.create(name='Huevos Rancheros', calories=555)
         food2 = Food.objects.create(name='Bacon', calories=777)
         food3 = Food.objects.create(name='Smoked Salmon Scramble', calories=600)
@@ -25,8 +25,8 @@ class MealModelTest(TestCase):
 
         meal_count = Meal.objects.count()
         foods_count = meal1.foods.count()
-        self.assertEqual(meal1.name, 'Breakfast')
-        self.assertEqual(meal_count, 1)
+        self.assertEqual(meal1.name, 'Brekkie')
+        self.assertEqual(meal_count, 5)
         self.assertEqual(foods_count, 3)
 
 class FoodEndpointsTest(TestCase):
@@ -120,7 +120,7 @@ class MealEndpointsTest(TestCase):
 
     def test_get_all_meals_endpoint_json(self):
         meal1 = Meal.objects.create(name='Brunch')
-        meal2 = Meal.objects.create(name='Lunch')
+        meal2 = Meal.objects.create(name='Midday Meal')
         food1 = Food.objects.create(name='Huevos Rancheros', calories=555)
         food2 = Food.objects.create(name='Bacon', calories=777)
         food3 = Food.objects.create(name='Smoked Salmon Scramble', calories=600)
@@ -131,18 +131,18 @@ class MealEndpointsTest(TestCase):
         response = self.client.get('/api/v1/meals/')
         meals_response = response.json()
 
-        self.assertEqual(len(meals_response), 2)
-        self.assertEqual(meals_response[0]['name'], meal1.name)
-        self.assertEqual(len(meals_response[0]['foods']), 3)
-        self.assertEqual(meals_response[0]['foods'][0]['name'], 'Huevos Rancheros')
+        self.assertEqual(len(meals_response), 6)
+        self.assertEqual(meals_response[4]['name'], meal1.name)
+        self.assertEqual(len(meals_response[4]['foods']), 3)
+        self.assertEqual(meals_response[4]['foods'][0]['name'], 'Huevos Rancheros')
 
-        self.assertEqual(meals_response[1]['name'], meal2.name)
-        self.assertEqual(len(meals_response[1]['foods']), 2)
-        self.assertEqual(meals_response[1]['foods'][1]['name'], food2.name)
+        self.assertEqual(meals_response[5]['name'], meal2.name)
+        self.assertEqual(len(meals_response[5]['foods']), 2)
+        self.assertEqual(meals_response[5]['foods'][1]['name'], food2.name)
 
     def test_find_one_meal(self):
         meal1 = Meal.objects.create(name='Brunch')
-        meal2 = Meal.objects.create(name='Lunch')
+        meal2 = Meal.objects.create(name='Midday Meal')
         food1 = Food.objects.create(name='Huevos Rancheros', calories=555)
         food2 = Food.objects.create(name='Bacon', calories=777)
         food3 = Food.objects.create(name='Smoked Salmon Scramble', calories=600)
@@ -160,7 +160,7 @@ class MealEndpointsTest(TestCase):
 
     def test_find_one_meal_error_handling(self):
         meal1 = Meal.objects.create(name='Brunch')
-        meal2 = Meal.objects.create(name='Lunch')
+        meal2 = Meal.objects.create(name='Midday Meal')
         food1 = Food.objects.create(name='Huevos Rancheros', calories=555)
         food2 = Food.objects.create(name='Bacon', calories=777)
         food3 = Food.objects.create(name='Smoked Salmon Scramble', calories=600)
@@ -197,7 +197,7 @@ class MealEndpointsTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     def test_deleting_food_from_meal(self):
-        meal1 = Meal.objects.create(name='Snack')
+        meal1 = Meal.objects.create(name='Treat')
         food1 = Food.objects.create(name='Gum', calories=50)
         meal1.foods.add(food1)
 
@@ -206,7 +206,7 @@ class MealEndpointsTest(TestCase):
 
         response = self.client.delete(f'/api/v1/meals/{meal_id}/foods/{food_id}')
         meal_food_response = response.json()
-        message = {"message": "Successfully removed Gum from Snack"}
+        message = {"message": "Successfully removed Gum from Treat"}
         self.assertEqual(meal_food_response, message)
 
         response2 = self.client.get(f'/api/v1/meals/{meal_id}/foods')
@@ -224,3 +224,12 @@ class MealEndpointsTest(TestCase):
         food_id = str(food1.id)
         response = self.client.delete(f'/api/v1/meals/1000000/foods/{food_id}')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_deleting_food_that_has_been_assigned_to_meal_does_not_work(self):
+        meal1 = Meal.objects.create(name='Dimsum')
+        food1 = Food.objects.create(name='Peking Duck', calories=1234)
+        meal1.foods.add(food1)
+        food_id = str(food1.id)
+
+        response = self.client.delete(f'/api/v1/foods/{food_id}')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
