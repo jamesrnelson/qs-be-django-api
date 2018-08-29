@@ -3,14 +3,18 @@
 
 ## Quantified Self
 
-Quantified Self is available in production at https://jamesrnelson.github.io/qs-fe-django
-The backend API is hosted at https://polar-journey-23475.herokuapp.com/api/v1/foods
+Quantified Self is an iterated project. It is an API that was first built in Rails, then in Express, and then in Django.  The frontend for the Django API can be accessed at https://jamesrnelson.github.io/qs-fe-django
 
-Quantified Self is the Django api that supports a preexisting javascript frontend. The frontend and backend together allow an individual to create foods and add them to certain preexisting meals in order to keep track of their daily caloric intake.
+The Django backend API is hosted at https://polar-journey-23475.herokuapp.com/api/v1/foods
+
+The backend express API repo can be found here: https://github.com/jamesrnelson/qs-be-express-api
+The backend rails API repo can be found here: https://github.com/jamesrnelson/qs-be-rails-api
+
+These APIs support a preexisting javascript frontend. The frontend and backend together allow an individual to create foods and add them to certain preexisting meals in order to keep track of their daily caloric intake.
 
 ### Python
 
-Quantified self was built using Python 3.7 and Django 2.1
+Quantified Self was built using Python 3.7 and Django 2.1
 
 ### Set up and Use
 
